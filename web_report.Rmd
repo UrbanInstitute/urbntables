@@ -1,0 +1,93 @@
+---
+title: ""
+author: ""
+date: "`r format(Sys.time(), '%B %d, %Y %H:%M')`"
+output:
+  html_document:
+    number_sections: true
+    self_contained: TRUE
+    code_folding: hide
+    css: !expr here::here("www", "web_report.css")
+    editor_options:
+      chunk_output_type: console
+---
+
+<style>
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+</style>
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato" />
+
+
+
+```{r rmarkdown-setup, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+```
+
+```{r setup, cache = TRUE}
+options(scipen = 999)
+
+
+```
+
+```{r}
+library(tidyverse)
+library(gt)
+
+data <- tribble(
+  ~`City or MSA`, ~`Home price`, ~`Fair market rent ($ millions)`, ~`Rent`, ~`First month principal`, ~`Rent vouchers`, ~`Homeownership vouchers`,
+  "Houston, TX", 589, 589, 589, 589, 589, 589,
+  "Philadelphia, PA", 296, 296, 296, 296, 296, 296,
+  "Columbus, OH", 883, 883, 883, 883, 883, 883,
+  "El Paso, TX", 296, 296, 296, 296, 296, 296,
+  "Louisville, KY", 883, 883, 883, 883, 883, 883
+)
+  
+data %>% 
+  gt() %>% 
+  tab_options(table.width = px(760),
+              table.align = "left", 
+              heading.align = "left",
+              table.border.top.style = "hidden",
+              # TODO: Discuss with Comms whether border should extend across 
+              # whole row at bottom or just across data cells
+              # TODO: Discuss whether we want a source/notes field at bottom of tables
+              table.border.bottom.style = "hidden",
+              # table.border.bottom.width = px(1),
+              # table.border.bottom.color = "red",
+              heading.border.bottom.style = "hidden",
+              # Need to set this to transparent so that cells_borders of the cells can display properly
+              table_body.border.bottom.style = "transparent",
+              table_body.border.top.width = px(1),
+              table_body.border.top.color = "red",
+              ) %>% 
+  tab_source_note(source_note = "EXAMPLE") %>% 
+  tab_header(
+    title = "EYEBROW",
+    subtitle = "Top 10 Banks (by Dollar Volume) for Community Development Lending") %>% 
+    tab_style(
+      style = list(
+        cell_borders(
+          sides = c("bottom"),
+          color = "#d2d2d2",
+          weight = px(1)
+        )
+      ),
+      locations = list(
+        cells_body(
+          columns =  gt::everything()
+          # rows = gt::everything()
+        )
+      )
+    ) %>% 
+  opt_table_font(
+      font = list(
+        google_font("Lato"),
+        default_fonts()
+      )
+    )
+  
+  
+```
+
