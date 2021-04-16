@@ -47,12 +47,14 @@ data <- tribble(
 
 
 
+random_id = random_id(n=10)
+
 data %>% 
-  gt() %>% 
+  gt(id = random_id) %>% 
   tab_options(table.width = px(760),
               table.align = "left", 
               heading.align = "left",
-              # TODO: Discuss with Comms whether border should extend across 
+              # TODO: Discuss with Comms  whether border should extend across 
               # whole row at bottom or just across data cells
               # TODO: Discuss whether we want a source/notes field at bottom of tables
               table.border.top.style = "hidden",
@@ -69,7 +71,7 @@ data %>%
               heading.subtitle.font.size = px(18),
               column_labels.font.size = px(14),
               table.font.size = px(14),
-              data_row.padding = px(15),
+              source_notes.font.size = px(12),
               ) %>% 
   tab_source_note(source_note = "Source: Narayanan, and Williams, 2019") %>% 
   tab_header(
@@ -109,15 +111,26 @@ data %>%
         # rows = gt::everything()
       )
     )
-  ) 
-# %>%
-#     opt_css(
-#     css = "
-#     #one .gt_sourcenote{
-#       padding-top: 40px ;
-#     }
-#     "
-#   )
+  )  %>%
+  # Set css for all the things we can't finetune exactly in gt, mostly padding
+  opt_css(
+    css = str_glue("
+    #{random_id} .gt_row {{
+      padding: 15px 15px 15px 15px;
+    }}
+    #{random_id} .gt_sourcenote {{
+      padding: 16px 0px 16px 0px;
+    }}
+    #{random_id} .gt_subtitle {{
+      padding: 0px 0px 32px 0px;
+    }}
+    #{random_id} .gt_col_heading {{
+      padding: 0px 15px 10px 15px;
+    }}
+    ") %>% as.character()
+  )
+
+  
   
   
 ```
