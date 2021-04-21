@@ -1,0 +1,257 @@
+---
+title: ""
+author: ""
+date: "`r format(Sys.time(), '%B %d, %Y %H:%M')`"
+output:
+  html_document:
+    number_sections: FALSE
+    self_contained: TRUE
+    code_folding: hide
+    css: !expr here::here("www", "web_report.css")
+    editor_options:
+      chunk_output_type: console
+---
+
+<style>
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+</style>
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato" />
+
+
+
+```{r rmarkdown-setup, echo = FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+options(scipen = 999)
+
+
+```
+
+
+
+# `gt` table theme examples
+
+This contains brief examples of tables in the Urban format.
+<br>
+
+```{r}
+library(tidyverse)
+library(gt)
+
+df <- tribble(
+  ~`City or MSA`, ~`Home price`, ~`Fair market rent ($ millions)`, ~`Rent`, ~`First month principal`, ~`Rent vouchers`, ~`Homeownership vouchers`,
+  "Houston, TX", 589, 589, 589, 589, 589, 589,
+  "Philadelphia, PA", 296, 296, 296, 296, 296, 296,
+  "Columbus, OH", 883, 883, 883, 883, 883, 883,
+  "El Paso, TX", 296, 296, 296, 296, 296, 296,
+  "Louisville, KY", 883, 883, 883, 883, 883, 883
+)
+
+
+
+
+create_table <- function(data_df, rowname_col = NA){
+  random_id = random_id(n=10)
+
+  
+  
+  basic_table = data_df %>% 
+    gt(id = random_id, rowname_col = rowname_col) %>% 
+    tab_options(table.width = px(760),
+                table.align = "left", 
+                heading.align = "left",
+                # TODO: Discuss with Comms  whether border should extend across 
+                # whole row at bottom or just across data cells
+                # TODO: Discuss whether we want a source/notes field at bottom of tables
+                table.border.top.style = "hidden",
+                table.border.bottom.style = "hidden",
+                heading.border.bottom.style = "hidden",
+                # Need to set this to transparent so that cells_borders of the cells can display properly and 
+                table_body.border.bottom.style = "transparent",
+                table_body.border.top.style = "transparent",
+                # column_labels.border.bottom.style = "transparent",
+                column_labels.border.bottom.width = px(1.6),
+                column_labels.border.bottom.color = "black",
+                # row_group.border.top.style = "hidden",
+                heading.title.font.size = px(14),
+                heading.subtitle.font.size = px(18),
+                column_labels.font.size = px(14),
+                table.font.size = px(14),
+                source_notes.font.size = px(12),
+                ) %>% 
+    tab_header(
+      title = "eyebrow",
+      subtitle = "Top 10 Banks (by Dollar Volume) for Community Development Lending") %>% 
+    # Bold title, subtitle, and columns
+    tab_style(
+      style = cell_text(color = "black", weight = "bold", align = "left"),
+      locations = cells_title("subtitle")
+    ) %>% 
+    tab_style(
+      style = cell_text(color = "#696969", weight = "normal", align = "left", transform = "uppercase"),
+      locations = cells_title("title")
+    ) %>% 
+    tab_style(
+      style = cell_text(color = "black", weight = "bold", size = px(14)),
+      locations = cells_column_labels(gt::everything())
+    ) %>% 
+    opt_table_font(
+        font = list(
+          google_font("Lato"),
+          default_fonts()
+        )
+      ) %>% 
+    # Adjust cell borders for all cells
+    tab_style(
+      style = list(
+        cell_borders(
+          sides = c("bottom"),
+          color = "#d2d2d2",
+          weight = px(1)
+        )
+      ),
+      locations = list(
+        cells_body(
+          columns =  gt::everything()
+          # rows = gt::everything()
+        )
+      )
+    )  %>%
+    # Set css for all the things we can't finetune exactly in gt, mostly padding
+    opt_css(
+      css = str_glue("
+      #{random_id} .gt_row {{
+        padding: 15px 15px 15px 15px;
+      }}
+      #{random_id} .gt_sourcenote {{
+        padding: 16px 0px 16px 0px;
+      }}
+      #{random_id} .gt_subtitle {{
+        padding: 0px 0px 32px 0px;
+      }}
+      #{random_id} .gt_col_heading {{
+        padding: 0px 15px 10px 15px;
+      }}
+      ") %>% as.character()
+    )
+  
+  return(basic_table)
+}
+
+  
+  
+```
+
+
+## Basic table without customization
+
+```{r reprex_for_github_issue}
+
+basic_table = create_table(df)
+basic_table
+```
+
+<br>
+<br>
+
+
+## Basic table with customization (column width)
+
+```{r}
+basic_table %>% 
+  cols_width(
+    "City or MSA" ~ px(132),
+    "Home price" ~ px(108),
+    "Fair market rent ($ millions)" ~ px(108),
+    "Rent" ~ px(90),
+    "First month principal" ~ px(108),
+    "Rent vouchers" ~ px(90),
+    "Homeownership vouchers" ~ px(124),
+  ) %>% 
+  cols_label(
+    `Fair market rent ($ millions)` = html('<b>Fair market rent</b><br><span style="font-weight:normal">($ millions)</span>'),
+    `Homeownership vouchers` = html("Homeowner-<br>ship vouchers")
+     # `Fair market rent ($ millions)` = md("**Fair market rent**($ millions)"),
+  )
+
+
+
+```
+
+
+## Sourcenotes
+```{r}
+basic_table %>% 
+    tab_source_note(source_note = "Source: Narayanan, and Williams, 2019") 
+
+```
+
+## Footnotes
+```{r}
+basic_table %>% 
+  tab_footnote(
+    footnote = "Indexed to 2006 Dollars", 
+    locations = cells_column_labels(
+      columns = vars("Home price") # note
+      ))
+```
+
+
+
+## row group labels
+
+```{r}
+df_grouped <- df %>% 
+  mutate(groups = c("Cool Cities", "Cool Cities", "Uncool Cities", "Uncool Cities", "Uncool Cities")) %>% 
+  group_by(groups)
+
+
+basic_table_row_group_labels = create_table(df_grouped) %>% 
+  cols_width(
+    "City or MSA" ~ px(132),
+    "Home price" ~ px(108),
+    "Fair market rent ($ millions)" ~ px(108),
+    "Rent" ~ px(90),
+    "First month principal" ~ px(108),
+    "Rent vouchers" ~ px(90),
+    "Homeownership vouchers" ~ px(124),
+  ) %>% 
+  cols_label(
+    `Fair market rent ($ millions)` = html('<b>Fair market rent</b><br><span style="font-weight:normal">($ millions)</span>'),
+    `Homeownership vouchers` = html("Homeowner-<br>ship vouchers")
+     # `Fair market rent ($ millions)` = md("**Fair market rent**($ millions)"),
+  )
+
+basic_table_row_group_labels
+
+```
+
+## spanner column labels
+
+```{r}
+basic_table %>% 
+  tab_spanner(
+    label = "Vouchers",
+    columns = ends_with("vouchers"),
+  )
+
+```
+
+
+## Summary rows
+```{r}
+create_table(df, rowname_col = "City or MSA") %>% 
+  summary_rows(
+    columns = 2:7,
+    fns = list(
+      # add summary stats
+      Total = ~sum(.)
+    )
+  )
+
+```
+
+
+
+
