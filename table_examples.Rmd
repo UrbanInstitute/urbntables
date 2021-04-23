@@ -45,7 +45,7 @@ df <- tribble(
   ~`City or MSA`, ~`Home price`, ~`Fair market rent ($ millions)`, ~`Rent`, ~`First month principal`, ~`Rent vouchers`, ~`Homeownership vouchers`,
   "Houston, TX", 589, 589, 589, 589, 589, 589,
   "Philadelphia, PA", 296, 296, 296, 296, 296, 296,
-  "Columbus, OH", 883, 883, 883, 883, 883, 883,
+  "Columbus, OH", 883, 883, 883, 883, NA_integer_, 883,
   "El Paso, TX", 296, 296, 296, 296, 296, 296,
   "Louisville, KY", 883, 883, 883, 883, 883, 883
 )
@@ -57,9 +57,9 @@ create_table <- function(data_df,
                          rowname_col = NA,
                          fig_num = "",
                          title_text = ""){
-  random_id = random_id(n=10)
+  # random_id = random_id(n=10)
 
-  
+  random_id = "urban_table"
   
   basic_table = data_df %>% 
     gt(id = random_id, rowname_col = rowname_col) %>% 
@@ -84,7 +84,7 @@ create_table <- function(data_df,
                 column_labels.font.size = px(14),
                 table.font.size = px(14),
                 source_notes.font.size = px(12),
-                
+                footnotes.font.size = px(12),
                 # Set row group label and border options
                 row_group.font.size = px(14),
                 row_group.border.top.style = "transparent",
@@ -108,10 +108,14 @@ create_table <- function(data_df,
       style = cell_text(color = "black", weight = "bold", size = px(14)),
       locations = cells_column_labels(gt::everything())
     ) %>% 
-    # Italicize row groups 
+    # Italicize row group and column spanner text
     tab_style(
       style = cell_text(color = "black", style = "italic", size  = px(14)),
       locations = gt::cells_row_groups()
+    ) %>% 
+    tab_style(
+      style = cell_text(color = "black", style = "italic", size  = px(14)),
+      locations = gt::cells_column_spanners()
     ) %>% 
     opt_table_font(
         font = list(
@@ -119,7 +123,7 @@ create_table <- function(data_df,
           default_fonts()
         )
       ) %>% 
-    # Adjust cell borders for all cells
+    # Adjust cell borders for all cells, small grey bottom border, no top border
     tab_style(
       style = list(
         cell_borders(
@@ -150,6 +154,8 @@ create_table <- function(data_df,
         )
       )
     )  %>%
+    # Set missing value defaults
+    fmt_missing(columns = gt::everything(), missing_text = "—") %>%
     # Set css for all the things we can't finetune exactly in gt, mostly t/r/b/l padding
     opt_css(
       css = str_glue("
@@ -157,7 +163,10 @@ create_table <- function(data_df,
         padding: 15px 15px 15px 15px;
       }}
       #{random_id} .gt_sourcenote {{
-        padding: 16px 0px 16px 0px;
+        padding: 16px 0px 0px 0px;
+      }}
+      #{random_id} .gt_footnote {{
+        padding: 16px 0px 0px 0px;
       }}
       #{random_id} .gt_subtitle {{
         padding: 0px 0px 22px 0px;
@@ -312,9 +321,14 @@ basic_table %>%
   tab_spanner(
     label = "Names",
     columns = 1:2,
-  ) 
+  ) %>% 
+  tab_style(
+    style = cell_text(color = "black", style = "italic", size  = px(14)),
+    locations = gt::cells_column_spanners()
+  )
 
 ```
+
 
 ## Spanner column labels (2) 
 
@@ -328,6 +342,10 @@ basic_table %>%
   tab_spanner(
     label = "Dollars",
     columns = 3:4
+  ) %>% 
+  tab_style(
+    style = cell_text(color = "black", style = "italic", size  = px(14)),
+    locations = gt::cells_column_spanners()
   )
 
 ```
@@ -350,10 +368,13 @@ create_table(df,
       # add summary stats
       Total = ~sum(.)
     )
-  )
+  ) 
 
 
 ```
+
+
+
 
 <br>
 <br>
@@ -386,7 +407,11 @@ create_table(df_grouped,
     footnote = "Indexed to 2006 Dollars", 
     locations = cells_column_labels(
       columns = vars("Home price") # note
-    ))
+    )) %>% 
+  tab_style(
+    style = cell_text(color = "black", style = "italic", size  = px(14)),
+    locations = gt::cells_column_spanners()
+  )
 
 
 ```
