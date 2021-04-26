@@ -438,6 +438,7 @@ create_table &lt;- function(data_df,
 }</code></pre>
 <div id="basic-table-no-customization" class="section level2">
 <h2>Basic table (no customization)</h2>
+<p>This is the table as it would look if someone just applied the Urban theme to it (ie one line of code).</p>
 <pre class="r"><code>basic_table = create_table(df,
                            fig_num = &quot;eyebrow&quot;,
                            title_text = &quot;Top 10 Banks (by Dollar Volume) for Community Development Lending&quot; )
@@ -903,6 +904,7 @@ html {
 </div>
 <div id="basic-table-with-customization-widths-column-capitalization" class="section level2">
 <h2>Basic table with customization (widths, column capitalization)</h2>
+<p>This is the table if someone added a few more customizations for column widths, and column name spacing/selective capitalization (ie uncapitalizing <code>$ millions</code> in the column title and put it on a new line). This will require a bit more education and manual work on the programmers side (Click the code button to see how much work) but is a better looking table.</p>
 <pre class="r"><code>add_housing_table_specific_customizations = function(gt_object){
   gt_object %&gt;% 
   cols_width(
