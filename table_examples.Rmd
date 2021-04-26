@@ -234,9 +234,9 @@ basic_table
 <br>
 
 
-## Basic table with customization (widths, column capitalization)
+## Basic table with customization (column widths, selective bolding, etc)
 
-This is the table if someone added a few more customizations for column widths, and column name spacing/selective capitalization (ie uncapitalizing `$ millions` in the column title and put it on a new line). This will require a bit more education and manual work on the programmers side (Click the code button to see how much work) but is a better looking table.
+This is the table if someone added a few more customizations for column widths, and column name spacing/selective bolding (ie unbolding `$ millions` in the column title and putting it on a new line). This will require a bit more education and manual work on the programmers side (Click the code button to see how much work) but is a better looking table.
 
 ```{r}
  
