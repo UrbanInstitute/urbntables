@@ -52,6 +52,42 @@ df <- tribble(
 
 
 
+```
+
+```{r, create-helper-fxns}
+## Helper functions
+
+# #' @param plural If `TRUE`, will change “Source:” to “Sources:”
+tab_source_urbn <- function(data, source_note, plural = FALSE){
+  if (plural) {
+    
+    data %>% 
+      gt::tab_source_note(source_note = gt::md(paste("**Sources:**", source_note)))
+    
+  } else {
+    
+    data %>% 
+      gt::tab_source_note(source_note = gt::md(paste("**Source:**", source_note)))
+    
+  }
+}
+
+# #` @param plural If `TRUE`, will change “Note:” to “Notes:”
+tab_note_urbn <- function(data, source_note, plural = FALSE) {
+  if (plural) {
+    
+    data %>% 
+      gt::tab_source_note(source_note = gt::md(paste("**Notes:**", source_note)))
+    
+  } else {
+    
+    data %>% 
+      gt::tab_source_note(source_note = gt::md(paste("**Note:**", source_note)))
+    
+  }
+}
+
+
 
 create_table <- function(data_df, 
                          rowname_col = NA,
@@ -83,8 +119,8 @@ create_table <- function(data_df,
                 heading.subtitle.font.size = px(18),
                 column_labels.font.size = px(14),
                 table.font.size = px(14),
-                source_notes.font.size = px(12),
-                footnotes.font.size = px(12),
+                source_notes.font.size = px(11),
+                footnotes.font.size = px(11),
                 # Set row group label and border options
                 row_group.font.size = px(14),
                 row_group.border.top.style = "transparent",
@@ -269,18 +305,18 @@ basic_table %>%
 <br>
 <br>
 
-## Sourcenotes
+## Sources and Notes
 ```{r}
 basic_table %>% 
   add_housing_table_specific_customizations() %>% 
-  tab_source_note(source_note = "Source: Narayanan, and Williams, 2019") 
-
+  tab_source_urbn(source_note = "Made up") %>% 
+  tab_note_urbn(source_note = "Narayanan, and Williams, 2019") 
 ```
 
 <br>
 <br>
 
-## Footnotes
+## Footnotes (Flag for Ben and Christina, do we want to allow this?)
 ```{r}
 basic_table %>% 
   add_housing_table_specific_customizations() %>% 
@@ -291,6 +327,21 @@ basic_table %>%
       ))
 ```
 
+
+
+
+## Source, Notes, and FootNotes together
+```{r}
+basic_table %>% 
+  add_housing_table_specific_customizations() %>% 
+  tab_source_urbn(source_note = "Made up") %>% 
+  tab_note_urbn(source_note = "Narayanan, and Williams, 2019") %>% 
+  tab_footnote(
+    footnote = "Indexed to 2006 Dollars", 
+    locations = cells_column_labels(
+      columns = vars("Home price") # note
+      ))
+```
 
 
 <br>
